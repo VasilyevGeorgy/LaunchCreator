@@ -51,16 +51,31 @@ QString MainWindow::boolToString(bool a){
 bool MainWindow::lfname_check(){
 
     QString launch_name = ui->lineEdit_2->text();
-    QRegExp ln_check("[a-zA-z0-9]*.launch");
-    ln_check.setPatternSyntax(QRegExp::Wildcard);
-    if (launch_name.isEmpty() || !ln_check.exactMatch(launch_name)){
+    QRegExp lfn_check("[a-zA-Z0-9]*.launch");
+    lfn_check.setPatternSyntax(QRegExp::Wildcard);
+    if (launch_name.isEmpty() || !lfn_check.exactMatch(launch_name)){
 
         ui->lineEdit_2->setText("Enter name of launch-file!");
         //ui->lineEdit_2->setStyleSheet("color: red;");
         return false;
     }
-    lfname = launch_name;
+    //lfname = launch_name;
     return true;
+}
+
+bool MainWindow::lfpath_check(){
+    QString launch_path = ui->lineEdit_3->text();
+    QRegExp lfp_check("[/][a-zA-Z0-9_/]*"); // [^/]*
+    //lfp_check.setPatternSyntax(QRegExp::Wildcard);
+    if (launch_path.isEmpty() || !lfp_check.exactMatch(launch_path)){
+
+        ui->lineEdit_3->setText("Enter path of launch-file!");
+        //ui->lineEdit_2->setStyleSheet("color: red;");
+        return false;
+    }
+    //lfolder_path = launch_path;
+    return true;
+
 }
 
 bool MainWindow::world_check(){
@@ -73,7 +88,7 @@ bool MainWindow::world_check(){
         ui->lineEdit->setText("Enter name of launch-file!");
         return false;
     }
-    world = world_name;
+    //world = world_name;
     return true;
 }
 
@@ -85,9 +100,9 @@ void MainWindow::on_browse_clicked()
                 "/opt/ros/kinetic/share/gazebo_ros/launch",
                 "launch files (*.launch)"
                 );
-    world = "/opt/ros/kinetic/share/gazebo_ros/launch" + world_name;
+    //world = "/opt/ros/kinetic/share/gazebo_ros/launch" + world_name;
     ui->lineEdit->setText("");
-    ui->lineEdit->setText(world);
+    ui->lineEdit->setText("/opt/ros/kinetic/share/gazebo_ros/launch/" + world_name);
 }
 
 void MainWindow::on_browse1_clicked()
@@ -102,9 +117,9 @@ void MainWindow::on_browse1_clicked()
                     home_name,
                     QFileDialog::ShowDirsOnly
                     );
-        lfolder_path = create_in;
-        lfile_path = lfolder_path +"/"+lfname;
-        ui->lineEdit_3->setText(lfolder_path);
+        //lfolder_path = create_in;
+        //lfile_path = lfolder_path +"/"+lfname;
+        ui->lineEdit_3->setText(create_in);
 
 }
 
@@ -124,15 +139,14 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
 
 void MainWindow::on_buttonBox_2_accepted()
 {
-    if(!world_check() || !lfname_check() || (ui->lineEdit_3->text().isEmpty())){
+    if(!world_check() || !lfname_check() || !lfpath_check() || (ui->lineEdit_3->text().isEmpty())){
         return;
     }
 
-    //world = ui->lineEdit->text();
-    lfolder_path = ui->lineEdit_3->text() + "/launch/";
-    lfile_path = lfolder_path + ui->lineEdit_2->text();
+    lfolder_path = ui->lineEdit_3->text() + "/launch";
+    lfile_path = lfolder_path + "/" + ui->lineEdit_2->text();
 
-    //ui->lineEdit_4->setText(lfile_path);
+    ui->lineEdit_4->setText(lfile_path);
 
     paused = ui->checkBox_2->isChecked();
     use_sim_time = ui->checkBox_3->isChecked();

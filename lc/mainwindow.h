@@ -45,8 +45,9 @@ private:
     bool arg_check;
 
     QString boolToString(bool a);
-    bool lfname_check();
     bool world_check();
+    bool lfname_check();
+    bool lfpath_check();
 };
 
 #endif // MAINWINDOW_H

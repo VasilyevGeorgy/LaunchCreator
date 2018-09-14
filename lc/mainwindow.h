@@ -23,6 +23,10 @@ private slots:
     void on_buttonBox_2_accepted();
 
 
+    void on_buttonBox_2_rejected();
+
+    void on_checkBox_8_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
 
@@ -31,8 +35,8 @@ private:
     QString lfolder_path;
     QString lfile_path;
     QString home_name;
+    QString node;
 
-    QStringList arg_list;
     QStringList final_launch;
 
     bool def_wrld_set;
@@ -41,13 +45,15 @@ private:
     bool gui;
     bool headless;
     bool debug;
-
-    bool arg_check;
+    bool default_params;
+    bool in_gazebo_folder;
 
     QString boolToString(bool a);
     bool world_check();
     bool lfname_check();
     bool lfpath_check();
+    bool nname_check();
+
 };
 
 #endif // MAINWINDOW_H

@@ -21,7 +21,6 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
@@ -56,8 +55,12 @@ public:
     QCheckBox *checkBox;
     QLineEdit *lineEdit_4;
     QDialogButtonBox *buttonBox_2;
+    QLabel *label_7;
+    QLineEdit *lineEdit_5;
+    QCheckBox *checkBox_7;
+    QCheckBox *checkBox_8;
+    QCheckBox *checkBox_9;
     QMenuBar *menuBar;
-    QMenu *menu_LaunchCreator;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -65,7 +68,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(717, 481);
+        MainWindow->resize(635, 504);
         MainWindow->setMouseTracking(false);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
@@ -74,7 +77,7 @@ public:
         label->setGeometry(QRect(10, 10, 131, 17));
         browse = new QPushButton(centralWidget);
         browse->setObjectName(QStringLiteral("browse"));
-        browse->setGeometry(QRect(180, 70, 89, 25));
+        browse->setGeometry(QRect(180, 60, 89, 25));
         buttonBox = new QDialogButtonBox(centralWidget);
         buttonBox->setObjectName(QStringLiteral("buttonBox"));
         buttonBox->setGeometry(QRect(900, 590, 166, 25));
@@ -90,7 +93,7 @@ public:
         lineEdit_3->setGeometry(QRect(10, 310, 261, 25));
         browse1 = new QPushButton(centralWidget);
         browse1->setObjectName(QStringLiteral("browse1"));
-        browse1->setGeometry(QRect(180, 350, 89, 25));
+        browse1->setGeometry(QRect(180, 340, 89, 25));
         label_2 = new QLabel(centralWidget);
         label_2->setObjectName(QStringLiteral("label_2"));
         label_2->setGeometry(QRect(10, 230, 131, 17));
@@ -99,12 +102,15 @@ public:
         lineEdit_2->setGeometry(QRect(10, 250, 261, 25));
         label_3 = new QLabel(centralWidget);
         label_3->setObjectName(QStringLiteral("label_3"));
+        label_3->setEnabled(false);
         label_3->setGeometry(QRect(350, 10, 131, 17));
         comboBox = new QComboBox(centralWidget);
         comboBox->setObjectName(QStringLiteral("comboBox"));
+        comboBox->setEnabled(false);
         comboBox->setGeometry(QRect(350, 50, 211, 31));
         label_4 = new QLabel(centralWidget);
         label_4->setObjectName(QStringLiteral("label_4"));
+        label_4->setEnabled(false);
         label_4->setGeometry(QRect(350, 30, 131, 17));
         groupBox = new QGroupBox(centralWidget);
         groupBox->setObjectName(QStringLiteral("groupBox"));
@@ -132,17 +138,31 @@ public:
         checkBox->setGeometry(QRect(10, 130, 111, 23));
         lineEdit_4 = new QLineEdit(centralWidget);
         lineEdit_4->setObjectName(QStringLiteral("lineEdit_4"));
+        lineEdit_4->setEnabled(false);
         lineEdit_4->setGeometry(QRect(340, 110, 261, 25));
         buttonBox_2 = new QDialogButtonBox(centralWidget);
         buttonBox_2->setObjectName(QStringLiteral("buttonBox_2"));
-        buttonBox_2->setGeometry(QRect(550, 390, 166, 25));
+        buttonBox_2->setGeometry(QRect(460, 410, 166, 25));
         buttonBox_2->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+        label_7 = new QLabel(centralWidget);
+        label_7->setObjectName(QStringLiteral("label_7"));
+        label_7->setGeometry(QRect(10, 360, 131, 17));
+        lineEdit_5 = new QLineEdit(centralWidget);
+        lineEdit_5->setObjectName(QStringLiteral("lineEdit_5"));
+        lineEdit_5->setGeometry(QRect(10, 410, 261, 25));
+        checkBox_7 = new QCheckBox(centralWidget);
+        checkBox_7->setObjectName(QStringLiteral("checkBox_7"));
+        checkBox_7->setGeometry(QRect(10, 380, 271, 23));
+        checkBox_8 = new QCheckBox(centralWidget);
+        checkBox_8->setObjectName(QStringLiteral("checkBox_8"));
+        checkBox_8->setGeometry(QRect(10, 60, 101, 23));
+        checkBox_9 = new QCheckBox(centralWidget);
+        checkBox_9->setObjectName(QStringLiteral("checkBox_9"));
+        checkBox_9->setGeometry(QRect(80, 60, 92, 23));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 717, 22));
-        menu_LaunchCreator = new QMenu(menuBar);
-        menu_LaunchCreator->setObjectName(QStringLiteral("menu_LaunchCreator"));
+        menuBar->setGeometry(QRect(0, 0, 635, 22));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -150,8 +170,6 @@ public:
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
         MainWindow->setStatusBar(statusBar);
-
-        menuBar->addAction(menu_LaunchCreator->menuAction());
 
         retranslateUi(MainWindow);
 
@@ -181,7 +199,10 @@ public:
         checkBox_2->setText(QApplication::translate("MainWindow", "paused", 0));
         label_5->setText(QApplication::translate("MainWindow", "2. World settings:", 0));
         checkBox->setText(QApplication::translate("MainWindow", "Use default", 0));
-        menu_LaunchCreator->setTitle(QApplication::translate("MainWindow", " LaunchCreator", 0));
+        label_7->setText(QApplication::translate("MainWindow", "5. Node name:", 0));
+        checkBox_7->setText(QApplication::translate("MainWindow", "Automaticly (first node in CMakeList)", 0));
+        checkBox_8->setText(QApplication::translate("MainWindow", "Empty", 0));
+        checkBox_9->setText(QApplication::translate("MainWindow", "TurtleBot", 0));
     } // retranslateUi
 
 };

@@ -228,7 +228,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>headless</string>
+      <string>respawn</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="checkBox_4">
@@ -338,7 +338,7 @@
      <rect>
       <x>10</x>
       <y>380</y>
-      <width>271</width>
+      <width>291</width>
       <height>23</height>
      </rect>
     </property>

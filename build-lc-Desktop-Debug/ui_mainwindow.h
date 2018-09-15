@@ -152,7 +152,7 @@ public:
         lineEdit_5->setGeometry(QRect(10, 410, 261, 25));
         checkBox_7 = new QCheckBox(centralWidget);
         checkBox_7->setObjectName(QStringLiteral("checkBox_7"));
-        checkBox_7->setGeometry(QRect(10, 380, 271, 23));
+        checkBox_7->setGeometry(QRect(10, 380, 291, 23));
         checkBox_8 = new QCheckBox(centralWidget);
         checkBox_8->setObjectName(QStringLiteral("checkBox_8"));
         checkBox_8->setGeometry(QRect(10, 60, 101, 23));
@@ -194,7 +194,7 @@ public:
         groupBox->setTitle(QString());
         checkBox_6->setText(QApplication::translate("MainWindow", "debug", 0));
         checkBox_3->setText(QApplication::translate("MainWindow", "use_sim_time", 0));
-        checkBox_5->setText(QApplication::translate("MainWindow", "headless", 0));
+        checkBox_5->setText(QApplication::translate("MainWindow", "respawn", 0));
         checkBox_4->setText(QApplication::translate("MainWindow", "gui", 0));
         checkBox_2->setText(QApplication::translate("MainWindow", "paused", 0));
         label_5->setText(QApplication::translate("MainWindow", "2. World settings:", 0));

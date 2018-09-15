@@ -202,10 +202,6 @@ void MainWindow::thru_empty(QString launch_name, bool is_default_params){
     launch << "</launch>";
 
     write_file(lfolder_path, lfolder_path + "/" + launch_name, launch);
-
-    //QStringList name_list = launch_name.split('.',QString::SkipEmptyParts);
-    //launch_name = name_list.at(0) + "_1.launch";
-
 }
 
 //Overloading
@@ -355,7 +351,7 @@ void MainWindow::on_buttonBox_2_accepted()
             final_launch << "  <include file=\"$(find turtlebot_gazebo)/launch/turtlebot_world.launch\" />";
         }
         else{
-            add_params(final_launch);
+            add_params(flref);
             final_launch << "  <!-- Launch turtlebot_world with parameters -->";
             final_launch << "  <include file=\"$(find turtlebot_gazebo)/launch/turtlebot_world.launch\" >";
             add_args(flref);
@@ -367,7 +363,7 @@ void MainWindow::on_buttonBox_2_accepted()
         final_launch << "  <node name =\""+node+"\" pkg=\""+package+"\" type=\""+node+"\" output=\"screen\" />";
         final_launch << "</launch>";
 
-        write_file(lfolder_path, lfile_path, final_launch);
+        write_file(lfolder_path, lfile_path, flref);
     }
 
     if (empty_world && !turtlebot_world){
@@ -390,12 +386,80 @@ void MainWindow::on_buttonBox_2_accepted()
         final_launch << "  <node name =\""+node+"\" pkg=\""+package+"\" type=\""+node+"\" output=\"screen\" />";
         final_launch << "</launch>";
 
-        write_file(lfolder_path, lfile_path, final_launch);
+        write_file(lfolder_path, lfile_path, flref);
     }
 
     if (!empty_world && !turtlebot_world){
 
         thru_empty(ui->lineEdit_2->text(), default_params, node, package);
+    }
+
+    if (!empty_world && turtlebot_world){
+
+        //world thru emty
+        QStringList name_list = ui->lineEdit_2->text().split('.',QString::SkipEmptyParts);
+        thru_empty(name_list.at(0) + "_1.launch", true);
+
+        //turtlebot launch file
+        QStringList tb_launch;
+        tb_launch << "<launch>";
+        tb_launch << "  <arg name=\"world_file\" defualt=\"$(optenv TURTLEBOT_BASE kobuki)\"/>";
+        tb_launch << "  <arg name=\"base\" value=\"$(env TURTLEBOT_GAZEBO_WORLD_FILE)\"/>";
+        tb_launch << "  <arg name=\"battery\" value=\"$(optenv TURTLEBOT_BATTERY /proc/acpi/battery/BAT0)\"/>";
+        tb_launch << "  <arg name=\"stacks\" value=\"$(optenv TURTLEBOT_STACKS hexagons)\"/>";
+        tb_launch << "  <arg name=\"3d_sensor\" value=\"$(optenv TURTLEBOT_3D_SENSOR kinect)\"/>";
+        tb_launch << "  <arg name=\"gui\" default=\"true\"/>";
+        tb_launch << "";
+        tb_launch << "  <include file=\""+lfolder_path+"/"+name_list.at(0)+"_1.launch\">";
+        tb_launch << "    <arg name=\"world_name\" value=\"$(arg world_file)\"/>";
+        tb_launch << "  </include>";
+        tb_launch << "";
+        tb_launch << "  <include file=\"$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml\">";
+        tb_launch << "    <arg name=\"base\" value=\"$(arg base)\"/>";
+        tb_launch << "    <arg name=\"stacks\" value=\"$(arg stacks)\"/>";
+        tb_launch << "    <arg name=\"3d_sensor\" value=\"$(arg 3d_sensor)\"/>";
+        tb_launch << "  </include>";
+        tb_launch << "";
+        tb_launch << "  <node pkg=\"robot_state_publisher\" type=\"robot_state_publisher\" name=\"robot_state_publisher\">";
+        tb_launch << "    <param name=\"publish_frequency\" type=\"double\" value=\"30.0\" />";
+        tb_launch << "  </node>";
+        tb_launch << "";
+        tb_launch << "  <!-- Fake laser -->";
+        tb_launch << "  <node pkg=\"nodelet\" type=\"nodelet\" name=\"laserscan_nodelet_manager\" args=\"manager\"/>";
+        tb_launch << "  <node pkg=\"nodelet\" type=\"nodelet\" name=\"depthimage_to_laserscan\"";
+        tb_launch << "        args=\"load depthimage_to_laserscan/DepthImageToLaserScanNodelet laserscan_nodelet_manager\">";
+        tb_launch << "    <param name=\"scan_height\" value=\"10\"/>";
+        tb_launch << "    <param name=\"output_frame_id\" value=\"/camera_depth_frame\"/>";
+        tb_launch << "    <param name=\"range_min\" value=\"0.45\"/>";
+        tb_launch << "    <remap from=\"image\" to=\"/camera/depth/image_raw\"/>";
+        tb_launch << "    <remap from=\"scan\" to=\"/scan\"/>";
+        tb_launch << "  </node>";
+        tb_launch << "</launch>";
+
+        QStringList &tbref = tb_launch;
+        QString tb_name = lfolder_path+"/"+name_list.at(0)+"_2.launch";
+        write_file(lfolder_path, tb_name, tbref);
+
+        //executable file
+        final_launch << "<launch>";
+        if (default_params){
+            final_launch << "  <!-- Launch turtlebot_world -->";
+            final_launch << "  <include file=\""+tb_name+"\" />";
+        }
+        else{
+            add_params(flref);
+            final_launch << "  <!-- Launch turtlebot_world with parameters -->";
+            final_launch << "  <include file=\""+tb_name+"\">";
+            add_args(flref);
+            final_launch << "  </include>";
+        }
+
+        final_launch << "";
+        final_launch << "  <!-- Launch node -->";
+        final_launch << "  <node name =\""+node+"\" pkg=\""+package+"\" type=\""+node+"\" output=\"screen\" />";
+        final_launch << "</launch>";
+
+        write_file(lfolder_path, lfile_path, flref);
     }
 
     //<node name="spawn_urdf"pkg="gazebo_ros" type="spawn_model" respawn="false" args="-param robot_description -urdf -model hobo" />

@@ -152,6 +152,7 @@ public:
         lineEdit_5->setGeometry(QRect(10, 410, 261, 25));
         checkBox_7 = new QCheckBox(centralWidget);
         checkBox_7->setObjectName(QStringLiteral("checkBox_7"));
+        checkBox_7->setEnabled(false);
         checkBox_7->setGeometry(QRect(10, 380, 291, 23));
         checkBox_8 = new QCheckBox(centralWidget);
         checkBox_8->setObjectName(QStringLiteral("checkBox_8"));

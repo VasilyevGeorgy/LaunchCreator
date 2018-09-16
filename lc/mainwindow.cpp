@@ -398,19 +398,20 @@ void MainWindow::on_buttonBox_2_accepted()
 
         //world thru emty
         QStringList name_list = ui->lineEdit_2->text().split('.',QString::SkipEmptyParts);
-        thru_empty(name_list.at(0) + "_1.launch", true);
+        //thru_empty(name_list.at(0) + "_1.launch", true);
 
         //turtlebot launch file
         QStringList tb_launch;
         tb_launch << "<launch>";
-        tb_launch << "  <arg name=\"world_file\" defualt=\"$(optenv TURTLEBOT_BASE kobuki)\"/>";
-        tb_launch << "  <arg name=\"base\" value=\"$(env TURTLEBOT_GAZEBO_WORLD_FILE)\"/>";
+        tb_launch << "  <arg name=\"world_file\" default=\"$(env TURTLEBOT_GAZEBO_WORLD_FILE)\"/>";
+        tb_launch << "  <arg name=\"base\" value=\"$(optenv TURTLEBOT_BASE kobuki)\"/>";
         tb_launch << "  <arg name=\"battery\" value=\"$(optenv TURTLEBOT_BATTERY /proc/acpi/battery/BAT0)\"/>";
         tb_launch << "  <arg name=\"stacks\" value=\"$(optenv TURTLEBOT_STACKS hexagons)\"/>";
         tb_launch << "  <arg name=\"3d_sensor\" value=\"$(optenv TURTLEBOT_3D_SENSOR kinect)\"/>";
         tb_launch << "  <arg name=\"gui\" default=\"true\"/>";
         tb_launch << "";
-        tb_launch << "  <include file=\""+lfolder_path+"/"+name_list.at(0)+"_1.launch\">";
+        ///tb_launch << "  <include file=\""+lfolder_path+"/"+name_list.at(0)+"_1.launch\">";
+        tb_launch << "  <include file=\"$(find gazebo_ros)/launch/empty_world.launch\">";
         tb_launch << "    <arg name=\"world_name\" value=\"$(arg world_file)\"/>";
         tb_launch << "  </include>";
         tb_launch << "";
@@ -437,19 +438,43 @@ void MainWindow::on_buttonBox_2_accepted()
         tb_launch << "</launch>";
 
         QStringList &tbref = tb_launch;
-        QString tb_name = lfolder_path+"/"+name_list.at(0)+"_2.launch";
+        QString tb_name = lfolder_path+"/"+name_list.at(0)+"_1.launch";
         write_file(lfolder_path, tb_name, tbref);
 
         //executable file
         final_launch << "<launch>";
-        if (default_params){
-            final_launch << "  <!-- Launch turtlebot_world -->";
-            final_launch << "  <include file=\""+tb_name+"\" />";
-        }
-        else{
+
+        if (!default_params){
             add_params(flref);
             final_launch << "  <!-- Launch turtlebot_world with parameters -->";
-            final_launch << "  <include file=\""+tb_name+"\">";
+            final_launch << "  <include file=\"" + tb_name +"\">";
+        }
+        else{
+            final_launch << "  <!-- Launch turtlebot_world -->";
+            final_launch << "  <include file=\"" + tb_name +"\">";
+        }
+        if (in_gazebo_ros){
+            //Get world name
+            QStringList list = world.split('/',QString::SkipEmptyParts);
+            QString world_name = list.at(list.indexOf(QRegExp("[a-zA-Z0-9_]*.launch")));
+            world_name = world_name.left(world_name.lastIndexOf(QChar('.')));
+            world_name = world_name.replace('_','.');
+
+            final_launch << "    <arg name=\"world_file\" value=\"worlds/" + world_name + "\" />";
+        }
+        else{
+            //Filename extension check
+            QStringList list = world.split('.',QString::SkipEmptyParts);
+            QString world_extension = list.at(1);
+            if (world_extension == "launch"){
+                ui->lineEdit->setText("Choose it properly!");
+                return;
+            }
+            final_launch << "    <arg name=\"world_name\" value=\"" + world + "\" />";
+        }
+        if (default_params)
+            final_launch << "  </include>";
+        else{
             add_args(flref);
             final_launch << "  </include>";
         }

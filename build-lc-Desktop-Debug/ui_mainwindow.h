@@ -35,7 +35,6 @@ public:
     QWidget *centralWidget;
     QLabel *label;
     QPushButton *browse;
-    QDialogButtonBox *buttonBox;
     QLineEdit *lineEdit;
     QLabel *label1_3;
     QLineEdit *lineEdit_3;
@@ -68,7 +67,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(635, 504);
+        MainWindow->resize(664, 499);
         MainWindow->setMouseTracking(false);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
@@ -78,10 +77,6 @@ public:
         browse = new QPushButton(centralWidget);
         browse->setObjectName(QStringLiteral("browse"));
         browse->setGeometry(QRect(180, 60, 89, 25));
-        buttonBox = new QDialogButtonBox(centralWidget);
-        buttonBox->setObjectName(QStringLiteral("buttonBox"));
-        buttonBox->setGeometry(QRect(900, 590, 166, 25));
-        buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
         lineEdit = new QLineEdit(centralWidget);
         lineEdit->setObjectName(QStringLiteral("lineEdit"));
         lineEdit->setGeometry(QRect(10, 30, 261, 25));
@@ -138,7 +133,7 @@ public:
         checkBox->setGeometry(QRect(10, 130, 111, 23));
         lineEdit_4 = new QLineEdit(centralWidget);
         lineEdit_4->setObjectName(QStringLiteral("lineEdit_4"));
-        lineEdit_4->setEnabled(false);
+        lineEdit_4->setEnabled(true);
         lineEdit_4->setGeometry(QRect(340, 110, 261, 25));
         buttonBox_2 = new QDialogButtonBox(centralWidget);
         buttonBox_2->setObjectName(QStringLiteral("buttonBox_2"));
@@ -152,7 +147,7 @@ public:
         lineEdit_5->setGeometry(QRect(10, 410, 261, 25));
         checkBox_7 = new QCheckBox(centralWidget);
         checkBox_7->setObjectName(QStringLiteral("checkBox_7"));
-        checkBox_7->setEnabled(false);
+        checkBox_7->setEnabled(true);
         checkBox_7->setGeometry(QRect(10, 380, 291, 23));
         checkBox_8 = new QCheckBox(centralWidget);
         checkBox_8->setObjectName(QStringLiteral("checkBox_8"));
@@ -163,7 +158,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 635, 22));
+        menuBar->setGeometry(QRect(0, 0, 664, 22));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));

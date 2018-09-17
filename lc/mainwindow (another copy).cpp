@@ -276,23 +276,15 @@ void MainWindow::on_browse1_clicked()
     if(!lfname_check())
         return;
 
-    QString package_path;
-    if (QDir(home_name + "/catkin_ws/src").exists())
-        package_path = home_name + "/catkin_ws/src";
-    else
-        package_path = home_name;
-    QString& ppath_ref = package_path;
-
     QString create_in = QFileDialog::getExistingDirectory(
                 this,
                 tr("Choose package"),
-                ppath_ref,
+                home_name,
                 QFileDialog::ShowDirsOnly
                 );
     //lfolder_path = create_in;
     //lfile_path = lfolder_path +"/"+lfname;
     ui->lineEdit_3->setText(create_in);
-
 }
 
 void MainWindow::on_checkBox_stateChanged(int arg1)
@@ -404,25 +396,23 @@ void MainWindow::on_buttonBox_2_accepted()
 
     if (!empty_world && turtlebot_world){
 
+        //world thru emty
         QStringList name_list = ui->lineEdit_2->text().split('.',QString::SkipEmptyParts);
+        //thru_empty(name_list.at(0) + "_1.launch", true);
 
         //turtlebot launch file
         QStringList tb_launch;
-        QStringList& tbref = tb_launch;
         tb_launch << "<launch>";
         tb_launch << "  <arg name=\"world_file\" default=\"$(env TURTLEBOT_GAZEBO_WORLD_FILE)\"/>";
         tb_launch << "  <arg name=\"base\" value=\"$(optenv TURTLEBOT_BASE kobuki)\"/>";
         tb_launch << "  <arg name=\"battery\" value=\"$(optenv TURTLEBOT_BATTERY /proc/acpi/battery/BAT0)\"/>";
         tb_launch << "  <arg name=\"stacks\" value=\"$(optenv TURTLEBOT_STACKS hexagons)\"/>";
         tb_launch << "  <arg name=\"3d_sensor\" value=\"$(optenv TURTLEBOT_3D_SENSOR kinect)\"/>";
+        tb_launch << "  <arg name=\"gui\" default=\"true\"/>";
         tb_launch << "";
-        if(!default_params)
-            add_params(tbref);
-        ///tb_launch << "  <param name=\"robot_description\" command=\"$(find xacro)/xacro --inorder $(arg model)\" />";
+        ///tb_launch << "  <include file=\""+lfolder_path+"/"+name_list.at(0)+"_1.launch\">";
         tb_launch << "  <include file=\"$(find gazebo_ros)/launch/empty_world.launch\">";
         tb_launch << "    <arg name=\"world_name\" value=\"$(arg world_file)\"/>";
-        if(!default_params)
-            add_args(tbref);
         tb_launch << "  </include>";
         tb_launch << "";
         tb_launch << "  <include file=\"$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml\">";
@@ -447,23 +437,22 @@ void MainWindow::on_buttonBox_2_accepted()
         tb_launch << "  </node>";
         tb_launch << "</launch>";
 
+        QStringList &tbref = tb_launch;
         QString tb_name = lfolder_path+"/"+name_list.at(0)+"_1.launch";
         write_file(lfolder_path, tb_name, tbref);
 
         //executable file
         final_launch << "<launch>";
 
-        //if (!default_params){
-        //    add_params(flref);
-        //    final_launch << "  <!-- Launch turtlebot_world with parameters -->";
-        //}
-        //else{
-        //    final_launch << "  <!-- Launch turtlebot_world -->";
-        //}
-
-        final_launch << "  <!-- Launch turtlebot_world -->";
-
-        final_launch << "  <include file=\"" + tb_name + "\">";
+        if (!default_params){
+            add_params(flref);
+            final_launch << "  <!-- Launch turtlebot_world with parameters -->";
+            final_launch << "  <include file=\"" + tb_name +"\">";
+        }
+        else{
+            final_launch << "  <!-- Launch turtlebot_world -->";
+            final_launch << "  <include file=\"" + tb_name +"\">";
+        }
         if (in_gazebo_ros){
             //Get world name
             QStringList list = world.split('/',QString::SkipEmptyParts);
@@ -483,14 +472,12 @@ void MainWindow::on_buttonBox_2_accepted()
             }
             final_launch << "    <arg name=\"world_name\" value=\"" + world + "\" />";
         }
-        //if (default_params)
-        //    final_launch << "  </include>";
-        //else{
-        //    add_args(flref);
-        //    final_launch << "  </include>";
-        //}
-
-        final_launch << "  </include>";
+        if (default_params)
+            final_launch << "  </include>";
+        else{
+            add_args(flref);
+            final_launch << "  </include>";
+        }
 
         final_launch << "";
         final_launch << "  <!-- Launch node -->";
@@ -513,41 +500,3 @@ void MainWindow::on_buttonBox_2_rejected()
 }
 
 
-void MainWindow::on_checkBox_7_stateChanged(int arg1)
-{
-    ui->lineEdit_5->setText("");
-
-
-    //Get node's name
-    QString node_name;
-    QRegExp nn_rx("^add_executable.*"); // "^add_executable.*"
-
-    if(QFile(ui->lineEdit_3->text() + "/CMakeLists.txt").exists()){
-
-        QFile cmake_file(ui->lineEdit_3->text() + "/CMakeLists.txt");
-
-        if (cmake_file.open(QIODevice::ReadOnly | QIODevice::Text)){
-
-            QTextStream stream(&cmake_file);
-            while (!stream.atEnd()){
-                QString cur_str = stream.readLine();
-                if (nn_rx.exactMatch(cur_str)){
-                    node_name.append(cur_str);
-                    break;
-                }
-            }
-        }
-
-        cmake_file.close();
-
-        if(ui->checkBox_7->isChecked()){
-            node_name = (node_name.split('(')).at(1);
-            node_name = node_name.left(node_name.indexOf(QChar(' ')));
-            ui->lineEdit_5->setText(node_name);
-        }
-        else
-            ui->lineEdit_5->setText("");
-    }
-
-
-}

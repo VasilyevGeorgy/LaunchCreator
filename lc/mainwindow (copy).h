@@ -25,7 +25,6 @@ private slots:
     void on_buttonBox_2_rejected();
     void on_checkBox_8_stateChanged(int arg1);
 
-    void on_checkBox_7_stateChanged(int arg1);
 
 private:
     Ui::MainWindow *ui;

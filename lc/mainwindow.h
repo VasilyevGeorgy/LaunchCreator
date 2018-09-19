@@ -2,6 +2,16 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QGraphicsItem>
+
+#include <QGraphicsRectItem>
+#include <QGraphicsEllipseItem>
+#include <QGraphicsLineItem>
+#include <QGraphicsPixmapItem>
+
+#include "moveitem.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,8 +37,11 @@ private slots:
 
     void on_checkBox_7_stateChanged(int arg1);
 
+    void on_checkBox_10_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
+    QGraphicsScene *scene;
 
     QString world;
     QString lfname;
@@ -61,6 +74,10 @@ private:
     bool lfname_check();
     bool lfpath_check();
     bool nname_check();
+
+    bool *is_pressed;
+
+    MoveItem *robot_pos;
 
 };
 

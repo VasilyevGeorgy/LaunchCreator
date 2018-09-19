@@ -9,11 +9,18 @@
 #include <QColorDialog>
 #include <QDir>
 #include <QList>
+#include <QPixmap>
+
+#include "moveitem.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    this->resize(660,500);
+    this->setFixedSize(660,500);
+
+
     ui->setupUi(this);
     setWindowTitle("Launch Creator v0.1");
 
@@ -27,10 +34,32 @@ MainWindow::MainWindow(QWidget *parent) :
 
     default_params = true;
     in_gazebo_ros = false;
+    empty_world = false;
 
     QStringList env = QProcess::systemEnvironment();
     home_name = env.at(env.indexOf(QRegExp("^HOME=.+")));
     home_name.remove(0,5);
+
+    //is_pressed = new bool();
+
+    scene = new QGraphicsScene(-108,-108,216,216,this);
+    ui->graphicsView->resize(220,220);
+    QPixmap pim("/home/gera/seproject/launch_creator/lc/map_2.jpg");
+    scene->setBackgroundBrush(pim.scaled(10.2,10.2,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
+
+    ui->graphicsView->setScene(scene);
+    ui->graphicsView->setRenderHint(QPainter::Antialiasing);
+    ui->graphicsView->setCacheMode(QGraphicsView::CacheBackground);
+    ui->graphicsView->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+    //scene->addRect(scene->sceneRect());
+
+    robot_pos = new MoveItem(this,ui->lineEdit_6, ui->lineEdit_8);
+    robot_pos->setPos(0,0);
+    scene->addItem(robot_pos);
+
+    ui->graphicsView->setEnabled(false);
+
+    //ui->lineEdit_4->setText(pos_x);
 
 }
 
@@ -38,6 +67,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
 
 QString MainWindow::boolToString(bool a){
     QString result;
@@ -111,12 +141,12 @@ bool MainWindow::world_check(){
 
 bool MainWindow::nname_check(){
     QString node_name = ui->lineEdit_5->text();
-    QRegExp nn_check("(\\w+)");
+    QRegExp nn_check("(\\w*)");
     //nn_check.setPatternSyntax(QRegExp::Wildcard);
 
-    if(node_name.isEmpty() || !nn_check.exactMatch(node_name)){
-        ui->lineEdit_5->setText("Enter node name!");
-        ui->lineEdit_4->setText(boolToString(nn_check.exactMatch(node_name)));
+    if(!nn_check.exactMatch(node_name)){
+        ui->lineEdit_5->setText("Enter node name properly!");
+        //ui->lineEdit_4->setText(boolToString(nn_check.exactMatch(node_name)));
         return false;
     }
     return true;
@@ -276,6 +306,9 @@ void MainWindow::on_browse1_clicked()
     if(!lfname_check())
         return;
 
+    if(ui->checkBox_7->isChecked())
+        ui->checkBox_7->setChecked(false);
+
     QString package_path;
     if (QDir(home_name + "/catkin_ws/src").exists())
         package_path = home_name + "/catkin_ws/src";
@@ -316,8 +349,13 @@ void MainWindow::on_buttonBox_2_accepted()
     if( !((!world_check() && empty_world) || (world_check() && !empty_world))
             || !lfname_check() || !lfpath_check()
             || (ui->lineEdit_3->text().isEmpty()) || !nname_check()){
+
+        if (empty_world)
+            ui->lineEdit->setText("");
         return;
     }
+
+
     //Empty && TurtleBot check
     turtlebot_world = ui->checkBox_9->isChecked();
 
@@ -367,8 +405,11 @@ void MainWindow::on_buttonBox_2_accepted()
         }
 
         final_launch << "";
-        final_launch << "  <!-- Launch node -->";
-        final_launch << "  <node name =\""+node+"\" pkg=\""+package+"\" type=\""+node+"\" output=\"screen\" />";
+        if (!node.isEmpty()){
+            final_launch << "  <!-- Launch node -->";
+            final_launch << "  <node name =\""+node+"\" pkg=\""+package+"\" type=\""+node+"\" output=\"screen\" />";
+        }
+
         final_launch << "</launch>";
 
         write_file(lfolder_path, lfile_path, flref);
@@ -390,8 +431,11 @@ void MainWindow::on_buttonBox_2_accepted()
           }
 
         final_launch << "";
-        final_launch << "  <!-- Launch node -->";
-        final_launch << "  <node name =\""+node+"\" pkg=\""+package+"\" type=\""+node+"\" output=\"screen\" />";
+        if (!node.isEmpty()){
+            final_launch << "  <!-- Launch node -->";
+            final_launch << "  <node name =\""+node+"\" pkg=\""+package+"\" type=\""+node+"\" output=\"screen\" />";
+        }
+
         final_launch << "</launch>";
 
         write_file(lfolder_path, lfile_path, flref);
@@ -399,7 +443,10 @@ void MainWindow::on_buttonBox_2_accepted()
 
     if (!empty_world && !turtlebot_world){
 
-        thru_empty(ui->lineEdit_2->text(), default_params, node, package);
+        if (node.isEmpty())
+            thru_empty(ui->lineEdit_2->text(),default_params);
+        else
+            thru_empty(ui->lineEdit_2->text(), default_params, node, package);
     }
 
     if (!empty_world && turtlebot_world){
@@ -493,8 +540,10 @@ void MainWindow::on_buttonBox_2_accepted()
         final_launch << "  </include>";
 
         final_launch << "";
-        final_launch << "  <!-- Launch node -->";
-        final_launch << "  <node name =\""+node+"\" pkg=\""+package+"\" type=\""+node+"\" output=\"screen\" />";
+        if (!node.isEmpty()){
+            final_launch << "  <!-- Launch node -->";
+            final_launch << "  <node name =\""+node+"\" pkg=\""+package+"\" type=\""+node+"\" output=\"screen\" />";
+        }
         final_launch << "</launch>";
 
         write_file(lfolder_path, lfile_path, flref);
@@ -548,6 +597,20 @@ void MainWindow::on_checkBox_7_stateChanged(int arg1)
         else
             ui->lineEdit_5->setText("");
     }
+
+
+}
+
+void MainWindow::on_checkBox_10_stateChanged(int arg1)
+{
+    if (ui->checkBox_10->isChecked()){
+
+        ui->graphicsView->setEnabled(true);
+    }
+    else
+        ui->graphicsView->setEnabled(false);
+        ui->lineEdit_6->setText("");
+        ui->lineEdit_8->setText("");
 
 
 }

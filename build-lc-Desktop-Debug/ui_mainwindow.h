@@ -16,7 +16,9 @@
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QDialogButtonBox>
+#include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QGroupBox>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
@@ -25,6 +27,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -59,6 +62,16 @@ public:
     QCheckBox *checkBox_7;
     QCheckBox *checkBox_8;
     QCheckBox *checkBox_9;
+    QGraphicsView *graphicsView;
+    QCheckBox *checkBox_10;
+    QWidget *verticalLayoutWidget;
+    QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout;
+    QLabel *label_6;
+    QLineEdit *lineEdit_6;
+    QHBoxLayout *horizontalLayout_2;
+    QLabel *label_8;
+    QLineEdit *lineEdit_8;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -67,7 +80,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(664, 499);
+        MainWindow->resize(660, 500);
         MainWindow->setMouseTracking(false);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
@@ -155,10 +168,58 @@ public:
         checkBox_9 = new QCheckBox(centralWidget);
         checkBox_9->setObjectName(QStringLiteral("checkBox_9"));
         checkBox_9->setGeometry(QRect(80, 60, 92, 23));
+        graphicsView = new QGraphicsView(centralWidget);
+        graphicsView->setObjectName(QStringLiteral("graphicsView"));
+        graphicsView->setGeometry(QRect(340, 170, 220, 220));
+        checkBox_10 = new QCheckBox(centralWidget);
+        checkBox_10->setObjectName(QStringLiteral("checkBox_10"));
+        checkBox_10->setGeometry(QRect(340, 140, 92, 23));
+        verticalLayoutWidget = new QWidget(centralWidget);
+        verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
+        verticalLayoutWidget->setGeometry(QRect(580, 230, 61, 80));
+        verticalLayout = new QVBoxLayout(verticalLayoutWidget);
+        verticalLayout->setSpacing(6);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        label_6 = new QLabel(verticalLayoutWidget);
+        label_6->setObjectName(QStringLiteral("label_6"));
+        label_6->setEnabled(true);
+
+        horizontalLayout->addWidget(label_6);
+
+        lineEdit_6 = new QLineEdit(verticalLayoutWidget);
+        lineEdit_6->setObjectName(QStringLiteral("lineEdit_6"));
+
+        horizontalLayout->addWidget(lineEdit_6);
+
+
+        verticalLayout->addLayout(horizontalLayout);
+
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setSpacing(6);
+        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+        label_8 = new QLabel(verticalLayoutWidget);
+        label_8->setObjectName(QStringLiteral("label_8"));
+        label_8->setEnabled(true);
+
+        horizontalLayout_2->addWidget(label_8);
+
+        lineEdit_8 = new QLineEdit(verticalLayoutWidget);
+        lineEdit_8->setObjectName(QStringLiteral("lineEdit_8"));
+
+        horizontalLayout_2->addWidget(lineEdit_8);
+
+
+        verticalLayout->addLayout(horizontalLayout_2);
+
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 664, 22));
+        menuBar->setGeometry(QRect(0, 0, 660, 22));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -180,7 +241,7 @@ public:
         label1_3->setText(QApplication::translate("MainWindow", "4. Create in package:", 0));
         browse1->setText(QApplication::translate("MainWindow", "Browse", 0));
         label_2->setText(QApplication::translate("MainWindow", "3. Name (.launch):", 0));
-        label_3->setText(QApplication::translate("MainWindow", "5. Choose Robo(s):", 0));
+        label_3->setText(QApplication::translate("MainWindow", "6. Choose Robo(s):", 0));
         comboBox->clear();
         comboBox->insertItems(0, QStringList()
          << QApplication::translate("MainWindow", "1", 0)
@@ -199,6 +260,9 @@ public:
         checkBox_7->setText(QApplication::translate("MainWindow", "Automaticly (first node in CMakeList)", 0));
         checkBox_8->setText(QApplication::translate("MainWindow", "Empty", 0));
         checkBox_9->setText(QApplication::translate("MainWindow", "TurtleBot", 0));
+        checkBox_10->setText(QApplication::translate("MainWindow", "Use map", 0));
+        label_6->setText(QApplication::translate("MainWindow", "x:", 0));
+        label_8->setText(QApplication::translate("MainWindow", "y:", 0));
     } // retranslateUi
 
 };

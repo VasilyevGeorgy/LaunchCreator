@@ -17,9 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    this->resize(660,500);
-    this->setFixedSize(660,500);
-
+    //this->resize(660,500);
+    //this->setFixedSize(660,500);
 
     ui->setupUi(this);
     setWindowTitle("Launch Creator v0.1");
@@ -30,7 +29,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->checkBox_4->setChecked(true);
     ui->checkBox_5->setChecked(false);
     ui->checkBox_6->setChecked(false);
-    ui->groupBox->setEnabled(false);
+
+    ui->checkBox_2->setEnabled(false);
+    ui->checkBox_3->setEnabled(false);
+    ui->checkBox_4->setEnabled(false);
+    ui->checkBox_5->setEnabled(false);
+    ui->checkBox_6->setEnabled(false);
+
+    //ui->groupBox->setEnabled(false);
 
     default_params = true;
     in_gazebo_ros = false;
@@ -48,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     scene = new QGraphicsScene(-108,-108,216,216,this);
     ui->graphicsView->resize(220,220);
     QPixmap pim("/home/gera/seproject/launch_creator/lc/map_2.jpg");
-    scene->setBackgroundBrush(pim.scaled(10.2,10.2,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
+    scene->setBackgroundBrush(pim.scaled(10.8,10.8,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
 
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setRenderHint(QPainter::Antialiasing);
@@ -74,7 +80,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
+//Convert bool type to QString
 QString MainWindow::boolToString(bool a){
     QString result;
     if (a) result = "true";
@@ -82,6 +88,7 @@ QString MainWindow::boolToString(bool a){
     return result;
 }
 
+//If empty_world
 void MainWindow::on_checkBox_8_stateChanged(int arg1)
 {
     // Empty world checkbox
@@ -100,6 +107,7 @@ void MainWindow::on_checkBox_8_stateChanged(int arg1)
     Q_UNUSED (arg1);
 }
 
+//Check launch file name
 bool MainWindow::lfname_check(){
 
     QString launch_name = ui->lineEdit_2->text();
@@ -111,10 +119,11 @@ bool MainWindow::lfname_check(){
         //ui->lineEdit_2->setStyleSheet("color: red;");
         return false;
     }
-    //lfname = launch_name;
+
     return true;
 }
 
+//Check path to launch file
 bool MainWindow::lfpath_check(){
     QString launch_path = ui->lineEdit_3->text();
     QRegExp lfp_check("[/][a-zA-Z0-9_/]*"); // [^/]*
@@ -125,11 +134,11 @@ bool MainWindow::lfpath_check(){
         //ui->lineEdit_2->setStyleSheet("color: red;");
         return false;
     }
-    //lfolder_path = launch_path;
     return true;
 
 }
 
+//Check world name
 bool MainWindow::world_check(){
 
     QString world_name = ui->lineEdit->text();
@@ -147,6 +156,7 @@ bool MainWindow::world_check(){
     return true;
 }
 
+//Check node name
 bool MainWindow::nname_check(){
     QString node_name = ui->lineEdit_5->text();
     QRegExp nn_check("(\\w*)");
@@ -160,6 +170,7 @@ bool MainWindow::nname_check(){
     return true;
 }
 
+//Add params to launch file
 void MainWindow::add_params(QStringList &list_name){
     list_name << "  <!-- these are the arguments you can pass this launch file -->";
     list_name << "  <arg name=\"paused\" default=\"" + boolToString(paused) + "\" />";
@@ -170,6 +181,7 @@ void MainWindow::add_params(QStringList &list_name){
     list_name << "";
 }
 
+//Add args to launch file
 void MainWindow::add_args(QStringList& list_name){
     list_name << "    <arg name=\"paused\" value=\"$(arg paused)\" />";
     list_name << "    <arg name=\"use_sim_time\" value=\"$(arg use_sim_time)\" />";
@@ -178,6 +190,7 @@ void MainWindow::add_args(QStringList& list_name){
     list_name << "    <arg name=\"debug\" value=\"$(arg debug)\" />";
 }
 
+//Write to file
 void MainWindow::write_file(QString folder_path, QString file_path, QStringList& list_name){
 
     if (!QDir(folder_path).exists())
@@ -238,9 +251,10 @@ void MainWindow::thru_empty(QString launch_name, bool is_default_params){
         launch << "  </include>";
     }
 
-    if (ui->comboBox->currentIndex()!=0) // ui->comboBox->currentIndex()!=0
-        spawn_robot(flref);
-
+    if (ui->comboBox->currentIndex()!=0){ // ui->comboBox->currentIndex()!=0
+        if (spawn_robot(flref))
+            launch << "";
+    }
     launch << "</launch>";
 
     write_file(lfolder_path, lfolder_path + "/" + launch_name, launch);
@@ -288,33 +302,29 @@ void MainWindow::thru_empty(QString launch_name, bool is_default_params, QString
         launch << "  </include>";
     }
 
-    if (ui->comboBox->currentIndex()!=0) // ui->comboBox->currentIndex()!=0
-        spawn_robot(flref1);
+    if (ui->comboBox->currentIndex()!=0){
 
-    launch << "";
+        if(spawn_robot(flref1))
+            launch << "";
+    }
+
     launch << "  <node name =\""+node_name+"\" pkg=\""+package_name+"\" type=\""+node_name+"\" output=\"screen\" />";
     launch << "</launch>";
 
     write_file(lfolder_path, lfolder_path + "/" + launch_name, launch);
 
-    //QStringList name_list = launch_name.split('.',QString::SkipEmptyParts);
-    //launch_name = name_list.at(0) + "_1.launch";
-
 }
 
-void MainWindow::spawn_robot(QStringList &list_name){
+//Add robot spawner to launch file
+bool MainWindow::spawn_robot(QStringList &list_name){
 
-    list_name << "";
     QString desc_type = robot;
-    //QString desc_type = robot.right(robot.lastIndexOf(QChar('.')));
-
-
     desc_type = (desc_type.split('.')).last();
-    //node_name = node_name.left(node_name.indexOf(QChar(' ')));
 
+    if (desc_type.isEmpty()){
+        return false;
+    }
 
-
-    ui->lineEdit_5->setText(desc_type);
     if (desc_type == "urdf"){
         list_name << "  <!-- Spawn a robot into Gazebo -->";
         if (!ui->checkBox_10->isChecked())
@@ -325,10 +335,10 @@ void MainWindow::spawn_robot(QStringList &list_name){
 
     }
     if (desc_type == "xacro"){
-        list_name << "<!-- Convert an xacro and put on parameter server -->";
-        list_name << "<param name=\"robot_description\" command=\"$(find xacro)/xacro.py " + robot + "\" />";
+        list_name << "  <!-- Convert an xacro and put on parameter server -->";
+        list_name << "  <param name=\"robot_description\" command=\"$(find xacro)/xacro.py " + robot + "\" />";
         list_name << "";
-        list_name << "<!-- Spawn a robot into Gazebo -->";
+        list_name << "  <!-- Spawn a robot into Gazebo -->";
         if (!ui->checkBox_10->isChecked())
             list_name << "    <node name=\"spawn_urdf\" pkg=\"gazebo_ros\" type=\"spawn_model\" args=\"-param robot_description -urdf -model robot\" />";
         else
@@ -337,8 +347,10 @@ void MainWindow::spawn_robot(QStringList &list_name){
 
     }
 
+    return true;
 }
 
+//Open world
 void MainWindow::on_browse_clicked()
 {
     QString world_name = QFileDialog::getOpenFileName(
@@ -353,6 +365,7 @@ void MainWindow::on_browse_clicked()
 
 }
 
+//Open package
 void MainWindow::on_browse1_clicked()
 {
 
@@ -381,9 +394,18 @@ void MainWindow::on_browse1_clicked()
 
 }
 
+//Default simulation params
 void MainWindow::on_checkBox_stateChanged(int arg1)
 {
-    ui->groupBox->setEnabled(true);
+    //ui->groupBox->setEnabled(true);
+
+    ui->checkBox_2->setEnabled(true);
+    ui->checkBox_3->setEnabled(true);
+    ui->checkBox_4->setEnabled(true);
+    ui->checkBox_5->setEnabled(true);
+    ui->checkBox_6->setEnabled(true);
+
+
     default_params = false;
 
     if (ui->checkBox->isChecked()){
@@ -392,12 +414,171 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
            ui->checkBox_4->setChecked(true);
            ui->checkBox_5->setChecked(false);
            ui->checkBox_6->setChecked(false);
-           ui->groupBox->setEnabled(false);
+
+           ui->checkBox_2->setEnabled(false);
+           ui->checkBox_3->setEnabled(false);
+           ui->checkBox_4->setEnabled(false);
+           ui->checkBox_5->setEnabled(false);
+           ui->checkBox_6->setEnabled(false);
     }
 
     Q_UNUSED (arg1);
 }
 
+//Get node's name automaticly
+void MainWindow::on_checkBox_7_stateChanged(int arg1)
+{
+    ui->lineEdit_5->setText("");
+    //Get node's name
+    QString node_name;
+    QRegExp nn_rx("^add_executable.*"); // "^add_executable.*"
+
+    if(QFile(ui->lineEdit_3->text() + "/CMakeLists.txt").exists()){
+
+        QFile cmake_file(ui->lineEdit_3->text() + "/CMakeLists.txt");
+
+        if (cmake_file.open(QIODevice::ReadOnly | QIODevice::Text)){
+
+            QTextStream stream(&cmake_file);
+            while (!stream.atEnd()){
+                QString cur_str = stream.readLine();
+                if (nn_rx.exactMatch(cur_str)){
+                    node_name.append(cur_str);
+                    break;
+                }
+            }
+        }
+
+        cmake_file.close();
+
+        if(ui->checkBox_7->isChecked()){
+            node_name = (node_name.split('(')).at(1);
+            node_name = node_name.left(node_name.indexOf(QChar(' ')));
+            ui->lineEdit_5->setText(node_name);
+        }
+        else
+            ui->lineEdit_5->setText("");
+    }
+
+    Q_UNUSED (arg1);
+}
+
+//Use map
+void MainWindow::on_checkBox_10_stateChanged(int arg1)
+{
+    if (ui->checkBox_10->isChecked()){
+
+        ui->graphicsView->setEnabled(true);
+        ui->lineEdit_6->setEnabled(true);
+        ui->lineEdit_8->setEnabled(true);
+    }
+    else{
+        ui->graphicsView->setEnabled(false);
+        ui->lineEdit_6->setText("");
+        ui->lineEdit_8->setText("");
+        ui->lineEdit_6->setEnabled(false);
+        ui->lineEdit_8->setEnabled(false);
+
+    }
+
+    Q_UNUSED (arg1);
+}
+
+//Choose robot
+void MainWindow::on_comboBox_currentIndexChanged(int index)
+{
+    ui->lineEdit_4->setText("");
+
+    choose_robot();
+
+    Q_UNUSED (index);
+
+}
+
+void MainWindow::choose_robot(){
+
+    QString folder_path = "/opt/ros/kinetic/share/";
+
+    if (ui->comboBox->currentIndex() == 0){
+        ui->lineEdit_4->setEnabled(false);
+    }
+    if(ui->comboBox->currentIndex() == 1){
+        ui->lineEdit_4->setEnabled(true);
+        folder_path = folder_path + "pr2_description";
+        if (!QDir(folder_path).exists())
+            ui->lineEdit_4->setText("PR2 isn't found!");
+        else
+            ui->lineEdit_4->setText(folder_path + "/robots/pr2.urdf.xacro");
+    }
+
+    if(ui->comboBox->currentIndex() == 2){
+        ui->lineEdit_4->setEnabled(true);
+        folder_path = folder_path + "baxter_description";
+        if (!QDir(folder_path).exists())
+            ui->lineEdit_4->setText("Baxter isn't found!");
+        else
+            ui->lineEdit_4->setText(folder_path + "/urdf/baxter.urdf");
+    }
+
+    if(ui->comboBox->currentIndex() == 3){
+        ui->lineEdit_4->setReadOnly(false);
+        ui->browse_2->setEnabled(true);
+        ui->lineEdit_4->setEnabled(true);
+    }
+    else{
+        ui->browse_2->setEnabled(false);
+        ui->lineEdit_4->setReadOnly(true);
+    }
+
+}
+
+void MainWindow::on_browse_2_clicked()
+{
+    ui->checkBox_4->setText("");
+
+    QString description = QFileDialog::getOpenFileName(
+                this,
+                tr("Choose robot description file"),
+                "/opt/ros/kinetic/share/",
+                "urdf files (*.urdf);; xacro files (*.xacro)"
+                );
+
+    ui->lineEdit_4->setText("");
+    ui->lineEdit_4->setText(description);
+}
+
+bool MainWindow::robot_check(){
+    QRegExp rx("[/][a-zA-Z0-9_/-]*.xacro");
+    QRegExp rx1("[/][a-zA-Z0-9_/-]*.urdf");
+
+    rx.setPatternSyntax(QRegExp::Wildcard);
+    if (ui->lineEdit_4->text().isEmpty() || (!rx1.exactMatch(ui->lineEdit_4->text()) && !rx1.exactMatch(ui->lineEdit_4->text()) ) ){
+        ui->lineEdit_4->setText("Choose it properly!");
+        //ui->lineEdit_2->setStyleSheet("color: red;");
+        return false;
+    }
+    return true;
+}
+
+//Disable robot chooser if TurtleBot
+void MainWindow::on_checkBox_9_stateChanged(int arg1)
+{
+    if (ui->checkBox_9->isChecked()){
+        ui->lineEdit_4->setText("");
+        ui->lineEdit_4->setEnabled(false);
+        ui->comboBox->setEnabled(false);
+        ui->browse_2->setEnabled(false);
+    }
+    else{
+        ui->lineEdit_4->setEnabled(true);
+        ui->comboBox->setEnabled(true);
+        ui->browse_2->setEnabled(true);
+        choose_robot();
+    }
+    Q_UNUSED (arg1);
+}
+
+//Main part
 void MainWindow::on_buttonBox_2_accepted()
 {
     //Check empty fields
@@ -409,7 +590,6 @@ void MainWindow::on_buttonBox_2_accepted()
             ui->lineEdit->setText("");
         return;
     }
-
 
     //Empty && TurtleBot check
     turtlebot_world = ui->checkBox_9->isChecked();
@@ -488,10 +668,11 @@ void MainWindow::on_buttonBox_2_accepted()
 
          }
 
-        if (ui->comboBox->currentIndex()!=0) // ui->comboBox->currentIndex()!=0
-            spawn_robot(flref);
+        if (ui->comboBox->currentIndex()!=0){ // ui->comboBox->currentIndex()!=0
+            if(spawn_robot(flref))
+                final_launch << "";
+        }
 
-        final_launch << "";
         if (!node.isEmpty()){
             final_launch << "  <!-- Launch node -->";
             final_launch << "  <node name =\""+node+"\" pkg=\""+package+"\" type=\""+node+"\" output=\"screen\" />";
@@ -595,14 +776,6 @@ void MainWindow::on_buttonBox_2_accepted()
         //executable file
         final_launch << "<launch>";
 
-        //if (!default_params){
-        //    add_params(flref);
-        //    final_launch << "  <!-- Launch turtlebot_world with parameters -->";
-        //}
-        //else{
-        //    final_launch << "  <!-- Launch turtlebot_world -->";
-        //}
-
         final_launch << "  <!-- Launch turtlebot_world -->";
 
         final_launch << "  <include file=\"" + tb_name + "\">";
@@ -625,12 +798,6 @@ void MainWindow::on_buttonBox_2_accepted()
             }
             final_launch << "    <arg name=\"world_name\" value=\"" + world + "\" />";
         }
-        //if (default_params)
-        //    final_launch << "  </include>";
-        //else{
-        //    add_args(flref);
-        //    final_launch << "  </include>";
-        //}
 
         final_launch << "  </include>";
 
@@ -644,8 +811,6 @@ void MainWindow::on_buttonBox_2_accepted()
         write_file(lfolder_path, lfile_path, flref);
     }
 
-    //<node name="spawn_urdf"pkg="gazebo_ros" type="spawn_model" respawn="false" args="-param robot_description -urdf -model hobo" />
-
     if(QFile(lfile_path).exists()){
         QMessageBox::information(0, "LaunchCreatorMessage", "Launch file is created!");
         QApplication::quit();
@@ -656,145 +821,4 @@ void MainWindow::on_buttonBox_2_rejected()
 {
     QApplication::quit();
 }
-
-
-void MainWindow::on_checkBox_7_stateChanged(int arg1)
-{
-    ui->lineEdit_5->setText("");
-
-
-    //Get node's name
-    QString node_name;
-    QRegExp nn_rx("^add_executable.*"); // "^add_executable.*"
-
-    if(QFile(ui->lineEdit_3->text() + "/CMakeLists.txt").exists()){
-
-        QFile cmake_file(ui->lineEdit_3->text() + "/CMakeLists.txt");
-
-        if (cmake_file.open(QIODevice::ReadOnly | QIODevice::Text)){
-
-            QTextStream stream(&cmake_file);
-            while (!stream.atEnd()){
-                QString cur_str = stream.readLine();
-                if (nn_rx.exactMatch(cur_str)){
-                    node_name.append(cur_str);
-                    break;
-                }
-            }
-        }
-
-        cmake_file.close();
-
-        if(ui->checkBox_7->isChecked()){
-            node_name = (node_name.split('(')).at(1);
-            node_name = node_name.left(node_name.indexOf(QChar(' ')));
-            ui->lineEdit_5->setText(node_name);
-        }
-        else
-            ui->lineEdit_5->setText("");
-    }
-
-    Q_UNUSED (arg1);
-}
-
-void MainWindow::on_checkBox_10_stateChanged(int arg1)
-{
-    if (ui->checkBox_10->isChecked()){
-
-        ui->graphicsView->setEnabled(true);
-        ui->lineEdit_6->setEnabled(true);
-        ui->lineEdit_8->setEnabled(true);
-    }
-    else{
-        ui->graphicsView->setEnabled(false);
-        ui->lineEdit_6->setText("");
-        ui->lineEdit_8->setText("");
-        ui->lineEdit_6->setEnabled(false);
-        ui->lineEdit_8->setEnabled(false);
-
-    }
-
-    Q_UNUSED (arg1);
-}
-
-void MainWindow::on_comboBox_currentIndexChanged(int index)
-{
-    ui->lineEdit_4->setText("");
-
-    choose_robot();
-
-    //if (index==3){
-    //    ui->browse_2->setEnabled(true);
-    //}
-    //    //QMessageBox::information(0, "LaunchCreatorMessage", "test!");
-
-    Q_UNUSED (index);
-
-}
-
-void MainWindow::choose_robot(){
-
-    QString folder_path = "/opt/ros/kinetic/share/";
-
-    if (ui->comboBox->currentIndex() == 0){
-        ui->lineEdit_4->setEnabled(false);
-    }
-    if(ui->comboBox->currentIndex() == 1){
-        ui->lineEdit_4->setEnabled(true);
-        folder_path = folder_path + "pr2_description";
-        if (!QDir(folder_path).exists())
-            ui->lineEdit_4->setText("PR2 isn't found!");
-        else
-            ui->lineEdit_4->setText(folder_path + "/robots/pr2.urdf.xacro");
-    }
-
-    if(ui->comboBox->currentIndex() == 2){
-        ui->lineEdit_4->setEnabled(true);
-        folder_path = folder_path + "baxter_description";
-        if (!QDir(folder_path).exists())
-            ui->lineEdit_4->setText("Baxter isn't found!");
-        else
-            ui->lineEdit_4->setText(folder_path + "/urdf/baxter.urdf");
-    }
-
-    if(ui->comboBox->currentIndex() == 3){
-        ui->lineEdit_4->setReadOnly(false);
-        ui->browse_2->setEnabled(true);
-        ui->lineEdit_4->setEnabled(true);
-    }
-    else{
-        ui->browse_2->setEnabled(false);
-        ui->lineEdit_4->setReadOnly(true);
-    }
-
-}
-
-void MainWindow::on_browse_2_clicked()
-{
-    ui->checkBox_4->setText("");
-
-    QString description = QFileDialog::getOpenFileName(
-                this,
-                tr("Choose robot description file"),
-                "/opt/ros/kinetic/share/",
-                "urdf files (*.urdf);; xacro files (*.xacro)"
-                );
-
-    ui->lineEdit_4->setText("");
-    ui->lineEdit_4->setText(description);
-}
-
-bool MainWindow::robot_check(){
-    QRegExp rx("[/][a-zA-Z0-9_/-]*.xacro");
-    QRegExp rx1("[/][a-zA-Z0-9_/-]*.urdf");
-
-    rx.setPatternSyntax(QRegExp::Wildcard);
-    if (ui->lineEdit_4->text().isEmpty() || (!rx1.exactMatch(ui->lineEdit_4->text()) && !rx1.exactMatch(ui->lineEdit_4->text()) ) ){
-        ui->lineEdit_4->setText("Choose it properly!");
-        //ui->lineEdit_2->setStyleSheet("color: red;");
-        return false;
-    }
-    return true;
-}
-
 

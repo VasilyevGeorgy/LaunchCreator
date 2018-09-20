@@ -43,6 +43,8 @@ private slots:
 
     void on_browse_2_clicked();
 
+    void on_checkBox_9_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
@@ -76,7 +78,7 @@ private:
     void add_params(QStringList& list_name);
     void add_node(QStringList& list_name);
     void write_file(QString folder_path, QString file_path, QStringList& list_name);
-    void spawn_robot(QStringList& list_name);
+    bool spawn_robot(QStringList& list_name);
     bool world_check();
     bool lfname_check();
     bool lfpath_check();

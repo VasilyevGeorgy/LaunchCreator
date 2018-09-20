@@ -23,7 +23,7 @@ MoveItem::~MoveItem()
 QRectF MoveItem::boundingRect() const
 {
 
-    return QRectF(0,0,14,14);
+    return QRectF(-7,-7,14,14);
 
 }
 
@@ -31,7 +31,7 @@ void MoveItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
     painter->setPen(Qt::black);
     painter->setBrush(Qt::blue);
-    painter->drawEllipse(0,0,14,14);
+    painter->drawEllipse(-7,-7,14,14);
     Q_UNUSED(option);
     Q_UNUSED(widget);
 }

@@ -45,8 +45,6 @@ public:
     QLabel *label_2;
     QLineEdit *lineEdit_2;
     QLabel *label_3;
-    QComboBox *comboBox;
-    QLabel *label_4;
     QGroupBox *groupBox;
     QCheckBox *checkBox_6;
     QCheckBox *checkBox_3;
@@ -55,7 +53,6 @@ public:
     QCheckBox *checkBox_2;
     QLabel *label_5;
     QCheckBox *checkBox;
-    QLineEdit *lineEdit_4;
     QDialogButtonBox *buttonBox_2;
     QLabel *label_7;
     QLineEdit *lineEdit_5;
@@ -72,6 +69,9 @@ public:
     QHBoxLayout *horizontalLayout_2;
     QLabel *label_8;
     QLineEdit *lineEdit_8;
+    QComboBox *comboBox;
+    QPushButton *browse_2;
+    QLineEdit *lineEdit_4;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -110,16 +110,8 @@ public:
         lineEdit_2->setGeometry(QRect(10, 250, 261, 25));
         label_3 = new QLabel(centralWidget);
         label_3->setObjectName(QStringLiteral("label_3"));
-        label_3->setEnabled(false);
+        label_3->setEnabled(true);
         label_3->setGeometry(QRect(350, 10, 131, 17));
-        comboBox = new QComboBox(centralWidget);
-        comboBox->setObjectName(QStringLiteral("comboBox"));
-        comboBox->setEnabled(false);
-        comboBox->setGeometry(QRect(350, 50, 211, 31));
-        label_4 = new QLabel(centralWidget);
-        label_4->setObjectName(QStringLiteral("label_4"));
-        label_4->setEnabled(false);
-        label_4->setGeometry(QRect(350, 30, 131, 17));
         groupBox = new QGroupBox(centralWidget);
         groupBox->setObjectName(QStringLiteral("groupBox"));
         groupBox->setGeometry(QRect(10, 140, 261, 81));
@@ -144,10 +136,6 @@ public:
         checkBox = new QCheckBox(centralWidget);
         checkBox->setObjectName(QStringLiteral("checkBox"));
         checkBox->setGeometry(QRect(10, 130, 111, 23));
-        lineEdit_4 = new QLineEdit(centralWidget);
-        lineEdit_4->setObjectName(QStringLiteral("lineEdit_4"));
-        lineEdit_4->setEnabled(true);
-        lineEdit_4->setGeometry(QRect(340, 110, 261, 25));
         buttonBox_2 = new QDialogButtonBox(centralWidget);
         buttonBox_2->setObjectName(QStringLiteral("buttonBox_2"));
         buttonBox_2->setGeometry(QRect(460, 410, 166, 25));
@@ -176,7 +164,7 @@ public:
         checkBox_10->setGeometry(QRect(340, 140, 92, 23));
         verticalLayoutWidget = new QWidget(centralWidget);
         verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
-        verticalLayoutWidget->setGeometry(QRect(580, 230, 61, 80));
+        verticalLayoutWidget->setGeometry(QRect(580, 230, 77, 80));
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
@@ -216,6 +204,18 @@ public:
 
         verticalLayout->addLayout(horizontalLayout_2);
 
+        comboBox = new QComboBox(centralWidget);
+        comboBox->setObjectName(QStringLiteral("comboBox"));
+        comboBox->setEnabled(true);
+        comboBox->setGeometry(QRect(350, 30, 151, 25));
+        browse_2 = new QPushButton(centralWidget);
+        browse_2->setObjectName(QStringLiteral("browse_2"));
+        browse_2->setEnabled(true);
+        browse_2->setGeometry(QRect(520, 90, 89, 25));
+        lineEdit_4 = new QLineEdit(centralWidget);
+        lineEdit_4->setObjectName(QStringLiteral("lineEdit_4"));
+        lineEdit_4->setEnabled(true);
+        lineEdit_4->setGeometry(QRect(350, 60, 261, 25));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -241,13 +241,7 @@ public:
         label1_3->setText(QApplication::translate("MainWindow", "4. Create in package:", 0));
         browse1->setText(QApplication::translate("MainWindow", "Browse", 0));
         label_2->setText(QApplication::translate("MainWindow", "3. Name (.launch):", 0));
-        label_3->setText(QApplication::translate("MainWindow", "6. Choose Robo(s):", 0));
-        comboBox->clear();
-        comboBox->insertItems(0, QStringList()
-         << QApplication::translate("MainWindow", "1", 0)
-         << QApplication::translate("MainWindow", "2", 0)
-        );
-        label_4->setText(QApplication::translate("MainWindow", "Number of robots:", 0));
+        label_3->setText(QApplication::translate("MainWindow", "6. Choose Robot:", 0));
         groupBox->setTitle(QString());
         checkBox_6->setText(QApplication::translate("MainWindow", "debug", 0));
         checkBox_3->setText(QApplication::translate("MainWindow", "use_sim_time", 0));
@@ -263,6 +257,14 @@ public:
         checkBox_10->setText(QApplication::translate("MainWindow", "Use map", 0));
         label_6->setText(QApplication::translate("MainWindow", "x:", 0));
         label_8->setText(QApplication::translate("MainWindow", "y:", 0));
+        comboBox->clear();
+        comboBox->insertItems(0, QStringList()
+         << QApplication::translate("MainWindow", "None", 0)
+         << QApplication::translate("MainWindow", "PR2 robot", 0)
+         << QApplication::translate("MainWindow", "Baxter", 0)
+         << QApplication::translate("MainWindow", "MyRobot", 0)
+        );
+        browse_2->setText(QApplication::translate("MainWindow", "Browse", 0));
     } // retranslateUi
 
 };

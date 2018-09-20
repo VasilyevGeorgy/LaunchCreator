@@ -39,6 +39,10 @@ private slots:
 
     void on_checkBox_10_stateChanged(int arg1);
 
+    void on_comboBox_currentIndexChanged(int index);
+
+    void on_browse_2_clicked();
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
@@ -49,6 +53,7 @@ private:
     QString lfile_path;
     QString home_name;
     QString node;
+    QString robot;
 
     QStringList final_launch;
 
@@ -62,6 +67,7 @@ private:
     bool in_gazebo_ros;
     bool empty_world;
     bool turtlebot_world;
+    bool use_map;
 
     QString boolToString(bool a);
     void thru_empty(QString launch_name, bool is_default_params);
@@ -70,10 +76,13 @@ private:
     void add_params(QStringList& list_name);
     void add_node(QStringList& list_name);
     void write_file(QString folder_path, QString file_path, QStringList& list_name);
+    void spawn_robot(QStringList& list_name);
     bool world_check();
     bool lfname_check();
     bool lfpath_check();
     bool nname_check();
+    void choose_robot();
+    bool robot_check();
 
     bool *is_pressed;
 

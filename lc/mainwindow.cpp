@@ -42,6 +42,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //is_pressed = new bool();
 
+    ui->browse_2->setEnabled(false);
+    ui->lineEdit_4->setEnabled(false);
+
     scene = new QGraphicsScene(-108,-108,216,216,this);
     ui->graphicsView->resize(220,220);
     QPixmap pim("/home/gera/seproject/launch_creator/lc/map_2.jpg");
@@ -58,6 +61,9 @@ MainWindow::MainWindow(QWidget *parent) :
     scene->addItem(robot_pos);
 
     ui->graphicsView->setEnabled(false);
+
+    ui->lineEdit_6->setEnabled(false);
+    ui->lineEdit_8->setEnabled(false);
 
     //ui->lineEdit_4->setText(pos_x);
 
@@ -286,6 +292,43 @@ void MainWindow::thru_empty(QString launch_name, bool is_default_params, QString
 
 }
 
+void MainWindow::spawn_robot(QStringList &list_name){
+
+    list_name << "";
+    QString desc_type = robot;
+    //QString desc_type = robot.right(robot.lastIndexOf(QChar('.')));
+
+
+    desc_type = (desc_type.split('.')).last();
+    //node_name = node_name.left(node_name.indexOf(QChar(' ')));
+
+
+
+    ui->lineEdit_5->setText(desc_type);
+    if (desc_type == "urdf"){
+        list_name << "  <!-- Spawn a robot into Gazebo -->";
+        if (!ui->checkBox_10->isChecked())
+            list_name << "    <node name=\"spawn_urdf\" pkg=\"gazebo_ros\" type=\"spawn_model\" args=\"-file " + robot + " -urdf -model robot\" />";
+        else
+            list_name << "    <node name=\"spawn_urdf\" pkg=\"gazebo_ros\" type=\"spawn_model\" args=\"-file "
+                            + robot + " -urdf -x " + ui->lineEdit_6->text() + " -y " + ui->lineEdit_8->text() + "-model robot\" />";
+
+    }
+    if (desc_type == "xacro"){
+        list_name << "<!-- Convert an xacro and put on parameter server -->";
+        list_name << "<param name=\"robot_description\" command=\"$(find xacro)/xacro.py " + robot + "\" />";
+        list_name << "";
+        list_name << "<!-- Spawn a robot into Gazebo -->";
+        if (!ui->checkBox_10->isChecked())
+            list_name << "    <node name=\"spawn_urdf\" pkg=\"gazebo_ros\" type=\"spawn_model\" args=\"-param robot_description -urdf -model robot\" />";
+        else
+            list_name << "    <node name=\"spawn_urdf\" pkg=\"gazebo_ros\" type=\"spawn_model\" args=\"-param robot_description -urdf -x "
+                            + ui->lineEdit_6->text() + " -y " + ui->lineEdit_8->text() + "-model robot\" />";
+
+    }
+
+}
+
 void MainWindow::on_browse_clicked()
 {
     QString world_name = QFileDialog::getOpenFileName(
@@ -348,7 +391,7 @@ void MainWindow::on_buttonBox_2_accepted()
     //Check empty fields
     if( !((!world_check() && empty_world) || (world_check() && !empty_world))
             || !lfname_check() || !lfpath_check()
-            || (ui->lineEdit_3->text().isEmpty()) || !nname_check()){
+            || (ui->lineEdit_3->text().isEmpty()) || !nname_check()   || ((ui->comboBox->currentIndex()==3) && (!robot_check()))  ){
 
         if (empty_world)
             ui->lineEdit->setText("");
@@ -384,6 +427,9 @@ void MainWindow::on_buttonBox_2_accepted()
     QStringList p_list = (ui->lineEdit_3->text()).split('/',QString::SkipEmptyParts);
     QString package = p_list.last();
     //ui->lineEdit_4->setText(package);
+
+    //Get robot
+    robot = ui->lineEdit_4->text();
 
     //Compose launch-list
 
@@ -428,7 +474,10 @@ void MainWindow::on_buttonBox_2_accepted()
             add_args(flref);
             final_launch << "  </include>";
 
-          }
+         }
+
+        if (true) // ui->comboBox->currentIndex()!=0
+            spawn_robot(flref);
 
         final_launch << "";
         if (!node.isEmpty()){
@@ -472,7 +521,10 @@ void MainWindow::on_buttonBox_2_accepted()
             add_args(tbref);
         tb_launch << "  </include>";
         tb_launch << "";
-        tb_launch << "  <include file=\"$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml\">";
+        if (!ui->checkBox_10->isChecked())
+            tb_launch << "  <include file=\"$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml\">";
+        else
+            tb_launch << "  <include file=\""+lfolder_path+"/"+name_list.at(0)+"_2.launch.xml"+"\">";
         tb_launch << "    <arg name=\"base\" value=\"$(arg base)\"/>";
         tb_launch << "    <arg name=\"stacks\" value=\"$(arg stacks)\"/>";
         tb_launch << "    <arg name=\"3d_sensor\" value=\"$(arg 3d_sensor)\"/>";
@@ -496,6 +548,37 @@ void MainWindow::on_buttonBox_2_accepted()
 
         QString tb_name = lfolder_path+"/"+name_list.at(0)+"_1.launch";
         write_file(lfolder_path, tb_name, tbref);
+
+        if (ui->checkBox_10->isChecked()){
+            QStringList kobuki_list;
+
+            kobuki_list << "<launch>";
+            kobuki_list << "  <arg name=\"base\"/>";
+            kobuki_list << "  <arg name=\"stacks\"/>";
+            kobuki_list << "  <arg name=\"3d_sensor\"/>";
+            kobuki_list << "";
+            kobuki_list << "  <arg name=\"urdf_file\" default=\"$(find xacro)/xacro.py \'$(find turtlebot_description)/robots/$(arg base)_$(arg stacks)_$(arg 3d_sensor).urdf.xacro\'\" />";
+            kobuki_list << "  <param name=\"robot_description\" command=\"$(arg urdf_file)\" />";
+            kobuki_list << "";
+            kobuki_list << "  <!-- Gazebo model spawner -->";
+            kobuki_list << "  <node name=\"spawn_turtlebot_model\" pkg=\"gazebo_ros\" type=\"spawn_model\"";
+            kobuki_list << "        args=\"-x " + ui->lineEdit_6->text() + " -y " + ui->lineEdit_8->text() + " -unpause -urdf -param robot_description -model mobile_base\"/>";
+            kobuki_list << "";
+            kobuki_list << "  <!-- Velocity muxer -->";
+            kobuki_list << "  <node pkg=\"nodelet\" type=\"nodelet\" name=\"mobile_base_nodelet_manager\" args=\"manager\"/>";
+            kobuki_list << "  <node pkg=\"nodelet\" type=\"nodelet\" name=\"cmd_vel_mux\"";
+            kobuki_list << "        args=\"load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager\">";
+            kobuki_list << "    <param name=\"yaml_cfg_file\" value=\"$(find turtlebot_bringup)/param/mux.yaml\" />";
+            kobuki_list << "    <remap from=\"cmd_vel_mux/output\" to=\"mobile_base/commands/velocity\"/>";
+            kobuki_list << "  </node>";
+            kobuki_list << "";
+            kobuki_list << "  <!-- Bumper/cliff to pointcloud (not working, as it needs sensors/core messages) -->";
+            kobuki_list << "  <include file=\"$(find turtlebot_bringup)/launch/includes/kobuki/bumper2pc.launch.xml\"/>";
+            kobuki_list << "</launch>";
+
+            QStringList &kl_ref = kobuki_list;
+            write_file(lfolder_path, lfolder_path+"/"+name_list.at(0)+"_2.launch.xml", kl_ref);
+        }
 
         //executable file
         final_launch << "<launch>";
@@ -551,9 +634,10 @@ void MainWindow::on_buttonBox_2_accepted()
 
     //<node name="spawn_urdf"pkg="gazebo_ros" type="spawn_model" respawn="false" args="-param robot_description -urdf -model hobo" />
 
-    if(QFile(lfile_path).exists())
+    if(QFile(lfile_path).exists()){
         QMessageBox::information(0, "LaunchCreatorMessage", "Launch file is created!");
-
+        QApplication::quit();
+    }
 }
 
 void MainWindow::on_buttonBox_2_rejected()
@@ -606,11 +690,97 @@ void MainWindow::on_checkBox_10_stateChanged(int arg1)
     if (ui->checkBox_10->isChecked()){
 
         ui->graphicsView->setEnabled(true);
+        ui->lineEdit_6->setEnabled(true);
+        ui->lineEdit_8->setEnabled(true);
     }
-    else
+    else{
         ui->graphicsView->setEnabled(false);
         ui->lineEdit_6->setText("");
         ui->lineEdit_8->setText("");
+        ui->lineEdit_6->setEnabled(false);
+        ui->lineEdit_8->setEnabled(false);
 
+    }
+}
+
+void MainWindow::on_comboBox_currentIndexChanged(int index)
+{
+    ui->lineEdit_4->setText("");
+
+    choose_robot();
+
+    //if (index==3){
+    //    ui->browse_2->setEnabled(true);
+    //}
+    //    //QMessageBox::information(0, "LaunchCreatorMessage", "test!");
+
+    Q_UNUSED (index);
 
 }
+
+void MainWindow::choose_robot(){
+
+    QString folder_path = "/opt/ros/kinetic/share/";
+
+    if (ui->comboBox->currentIndex() == 0){
+        ui->lineEdit_4->setEnabled(false);
+    }
+    if(ui->comboBox->currentIndex() == 1){
+        ui->lineEdit_4->setEnabled(true);
+        folder_path = folder_path + "pr2_description";
+        if (!QDir(folder_path).exists())
+            ui->lineEdit_4->setText("PR2 isn't found!");
+        else
+            ui->lineEdit_4->setText(folder_path + "/robots/pr2.urdf.xacro");
+    }
+
+    if(ui->comboBox->currentIndex() == 2){
+        ui->lineEdit_4->setEnabled(true);
+        folder_path = folder_path + "baxter_description";
+        if (!QDir(folder_path).exists())
+            ui->lineEdit_4->setText("Baxter isn't found!");
+        else
+            ui->lineEdit_4->setText(folder_path + "/urdf/baxter.urdf");
+    }
+
+    if(ui->comboBox->currentIndex() == 3){
+        ui->lineEdit_4->setReadOnly(false);
+        ui->browse_2->setEnabled(true);
+        ui->lineEdit_4->setEnabled(true);
+    }
+    else{
+        ui->browse_2->setEnabled(false);
+        ui->lineEdit_4->setReadOnly(true);
+    }
+
+}
+
+void MainWindow::on_browse_2_clicked()
+{
+    ui->checkBox_4->setText("");
+
+    QString description = QFileDialog::getOpenFileName(
+                this,
+                tr("Choose robot description file"),
+                "/opt/ros/kinetic/share/",
+                "urdf files (*.urdf);; xacro files (*.xacro)"
+                );
+
+    ui->lineEdit_4->setText("");
+    ui->lineEdit_4->setText(description);
+}
+
+bool MainWindow::robot_check(){
+    QRegExp rx("[/][a-zA-Z0-9_/-]*.xacro");
+    QRegExp rx1("[/][a-zA-Z0-9_/-]*.urdf");
+
+    rx.setPatternSyntax(QRegExp::Wildcard);
+    if (ui->lineEdit_4->text().isEmpty() || (!rx1.exactMatch(ui->lineEdit_4->text()) && !rx1.exactMatch(ui->lineEdit_4->text()) ) ){
+        ui->lineEdit_4->setText("Choose it properly!");
+        //ui->lineEdit_2->setStyleSheet("color: red;");
+        return false;
+    }
+    return true;
+}
+
+

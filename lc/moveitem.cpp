@@ -43,6 +43,7 @@ void MoveItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     xp_pntr->setText(QString::number(this->x()/10));
     yp_pntr->setText(QString::number(-this->y()/10));
 
+
 }
 
 void MoveItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -66,6 +67,4 @@ void MoveItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
 
     Q_UNUSED(event);
 
-    //is_pressed = false;
 }
-

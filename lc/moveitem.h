@@ -27,6 +27,7 @@ private:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    //void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QLineEdit *xp_pntr;
     QLineEdit *yp_pntr;
 

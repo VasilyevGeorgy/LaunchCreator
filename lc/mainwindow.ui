@@ -114,7 +114,7 @@
    </widget>
    <widget class="QLabel" name="label_3">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -125,46 +125,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>6. Choose Robo(s):</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="comboBox">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>350</x>
-      <y>50</y>
-      <width>211</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <item>
-     <property name="text">
-      <string>1</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>2</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>350</x>
-      <y>30</y>
-      <width>131</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Number of robots:</string>
+     <string>6. Choose Robot:</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox">
@@ -269,19 +230,6 @@
     </property>
     <property name="text">
      <string>Use default</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit_4">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>110</y>
-      <width>261</width>
-      <height>25</height>
-     </rect>
     </property>
    </widget>
    <widget class="QDialogButtonBox" name="buttonBox_2">
@@ -390,7 +338,7 @@
      <rect>
       <x>580</x>
       <y>230</y>
-      <width>61</width>
+      <width>77</width>
       <height>80</height>
      </rect>
     </property>
@@ -430,6 +378,68 @@
       </layout>
      </item>
     </layout>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>30</y>
+      <width>151</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>None</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>PR2 robot</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Baxter</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>MyRobot</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPushButton" name="browse_2">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>90</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_4">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>60</y>
+      <width>261</width>
+      <height>25</height>
+     </rect>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

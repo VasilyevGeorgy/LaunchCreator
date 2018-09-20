@@ -96,6 +96,8 @@ void MainWindow::on_checkBox_8_stateChanged(int arg1)
         ui->browse->setEnabled(true);
         empty_world = false;
     }
+
+    Q_UNUSED (arg1);
 }
 
 bool MainWindow::lfname_check(){
@@ -392,6 +394,8 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
            ui->checkBox_6->setChecked(false);
            ui->groupBox->setEnabled(false);
     }
+
+    Q_UNUSED (arg1);
 }
 
 void MainWindow::on_buttonBox_2_accepted()
@@ -690,7 +694,7 @@ void MainWindow::on_checkBox_7_stateChanged(int arg1)
             ui->lineEdit_5->setText("");
     }
 
-
+    Q_UNUSED (arg1);
 }
 
 void MainWindow::on_checkBox_10_stateChanged(int arg1)
@@ -709,6 +713,8 @@ void MainWindow::on_checkBox_10_stateChanged(int arg1)
         ui->lineEdit_8->setEnabled(false);
 
     }
+
+    Q_UNUSED (arg1);
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(int index)

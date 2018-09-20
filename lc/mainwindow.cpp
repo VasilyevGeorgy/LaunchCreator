@@ -235,6 +235,10 @@ void MainWindow::thru_empty(QString launch_name, bool is_default_params){
         add_args(flref);
         launch << "  </include>";
     }
+
+    if (ui->comboBox->currentIndex()!=0) // ui->comboBox->currentIndex()!=0
+        spawn_robot(flref);
+
     launch << "</launch>";
 
     write_file(lfolder_path, lfolder_path + "/" + launch_name, launch);
@@ -281,6 +285,10 @@ void MainWindow::thru_empty(QString launch_name, bool is_default_params, QString
         add_args(flref1);
         launch << "  </include>";
     }
+
+    if (ui->comboBox->currentIndex()!=0) // ui->comboBox->currentIndex()!=0
+        spawn_robot(flref1);
+
     launch << "";
     launch << "  <node name =\""+node_name+"\" pkg=\""+package_name+"\" type=\""+node_name+"\" output=\"screen\" />";
     launch << "</launch>";
@@ -323,7 +331,7 @@ void MainWindow::spawn_robot(QStringList &list_name){
             list_name << "    <node name=\"spawn_urdf\" pkg=\"gazebo_ros\" type=\"spawn_model\" args=\"-param robot_description -urdf -model robot\" />";
         else
             list_name << "    <node name=\"spawn_urdf\" pkg=\"gazebo_ros\" type=\"spawn_model\" args=\"-param robot_description -urdf -x "
-                            + ui->lineEdit_6->text() + " -y " + ui->lineEdit_8->text() + "-model robot\" />";
+                            + ui->lineEdit_6->text() + " -y " + ui->lineEdit_8->text() + " -model robot\" />";
 
     }
 
@@ -476,7 +484,7 @@ void MainWindow::on_buttonBox_2_accepted()
 
          }
 
-        if (true) // ui->comboBox->currentIndex()!=0
+        if (ui->comboBox->currentIndex()!=0) // ui->comboBox->currentIndex()!=0
             spawn_robot(flref);
 
         final_launch << "";
